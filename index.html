@@ -279,49 +279,64 @@ a{color:inherit;text-decoration:none}
 .analyse-btn{width:100%;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;background:var(--accent);color:#000;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
 .analyse-btn:hover{opacity:.9}.analyse-btn:disabled{opacity:.35;cursor:not-allowed}
 .analyse-msg{font-size:12px;color:var(--muted2);margin-top:10px;min-height:18px}
-.inline-upload{display:flex;align-items:center;gap:8px}
-.inline-upload .small-upload{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:4px 12px;border-radius:5px;border:1px solid var(--border);background:var(--s2);color:var(--muted2);cursor:pointer;transition:all .15s}
-.inline-upload .small-upload:hover{border-color:var(--border2);color:var(--text)}
-.inline-upload input{display:none}
+.topbar-uploads{display:flex;gap:6px;align-items:center}
+.up-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;
+  padding:0 12px;height:30px;border-radius:7px;
+  border:1px solid var(--border);background:var(--s2);color:var(--muted2);
+  cursor:pointer;transition:all .2s;letter-spacing:.04em;white-space:nowrap;
+}
+.up-btn:hover{border-color:var(--border2);color:var(--text);background:var(--s3)}
+.up-btn.loaded{border-color:rgba(94,234,141,.4);color:var(--green);background:rgba(94,234,141,.06)}
+.up-btn svg{flex-shrink:0;opacity:.7}
+.up-btn input{display:none}
+.up-divider{width:1px;height:20px;background:var(--border);margin:0 2px}
 
 /* ── MISC ── */
 .hidden{display:none!important}
 .flex{display:flex;align-items:center;gap:8px}
 .ml-auto{margin-left:auto}
 .divider{height:1px;background:var(--border);margin:20px 0}
+/* ── EXECUTIVE DASHBOARD ── */
+.charts-row{display:grid;grid-template-columns:1fr 1.3fr 1.1fr;gap:14px;margin-bottom:20px}
+.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;align-items:center}
+.chart-title{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;width:100%}
+.chart-legend{display:flex;flex-direction:column;gap:5px;margin-top:12px;width:100%}
+.cleg-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted2)}
+.cleg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 
-/* ── PASSWORD SCREEN ── */
-.pw-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center}
-.pw-box{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:40px 44px;width:380px;max-width:95vw;text-align:center}
-.pw-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);margin-bottom:4px}
-.pw-sub{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:28px}
-.pw-field{position:relative;margin-bottom:10px}
-.pw-field input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 44px 12px 16px;outline:none;transition:border-color .2s;text-align:center;letter-spacing:.08em}
-.pw-field input:focus{border-color:var(--accent)}
-.pw-field input.shake{animation:shake .35s ease}
-.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:2px}
-.pw-toggle:hover{color:var(--text)}
-.pw-btn{width:100%;padding:11px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:opacity .15s;margin-top:4px}
-.pw-btn:hover{opacity:.88}
-.pw-error{font-size:12px;color:var(--red);min-height:18px;margin-top:6px}
-@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+/* EXEC SUMMARY */
+.exec-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:16px}
+.exec-card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.exec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.exec-stat{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.exec-stat-n{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-bottom:3px}
+.exec-stat-l{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2)}
+.exec-insight{font-size:13px;color:var(--muted2);line-height:1.65;padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--border)}
+.exec-insight strong{color:var(--text)}
+.exec-insight .hi-green{color:var(--green)}
+.exec-insight .hi-red{color:var(--red)}
+.exec-insight .hi-yellow{color:var(--yellow)}
+
+/* BODEGA TABLE SECTION */
+.bd-action-title{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.bd-exec-block{background:var(--s1);border:1px solid var(--border);border-radius:11px;margin-bottom:8px;overflow:hidden}
+.bd-exec-hd{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background .15s}
+.bd-exec-hd:hover{background:var(--s2)}
+.bd-exec-hd.open-hd{background:var(--s2);border-bottom:1px solid var(--border)}
+.bd-exec-body{display:none;padding:0}
+.bd-exec-body.open{display:block}
+
+/* INCONS AGRUPADAS */
+.incons-group-card{background:var(--orange-bg);border:1px solid rgba(255,154,60,.25);border-radius:10px;padding:16px 18px;margin-bottom:8px}
+.incons-group-title{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--orange);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.incons-refs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+
+
 </style>
 </head>
 <body>
-
-<!-- PASSWORD SCREEN -->
-<div id="pwScreen" class="pw-screen">
-  <div class="pw-box">
-    <div class="pw-logo">URA</div>
-    <div class="pw-sub">Abastecimiento de Telas</div>
-    <div class="pw-field">
-      <input type="password" id="pwInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkPw()">
-      <button class="pw-toggle" onclick="togglePwVis()" title="Mostrar/ocultar">👁</button>
-    </div>
-    <div class="pw-error" id="pwError"></div>
-    <button class="pw-btn" onclick="checkPw()">Ingresar</button>
-  </div>
-</div>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -331,21 +346,25 @@ a{color:inherit;text-decoration:none}
     <button class="tab"    onclick="switchTab('items')"    id="tab-items">Por ítem</button>
   </div>
   <div class="topbar-right">
-    <div class="inline-upload">
-      <span id="proyectoLabel" class="proyecto-badge" onclick="openModal()">— sin proyecto —</span>
+    <span id="proyectoLabel" class="proyecto-badge" onclick="openModal()">— sin proyecto —</span>
+    <div class="up-divider"></div>
+    <div class="topbar-uploads">
+      <label class="up-btn" id="quickReqLabel" title="Actualizar Requerimiento">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Requerimiento
+        <input type="file" accept=".xlsx,.xls" onchange="quickUpload('req',this)">
+      </label>
+      <label class="up-btn" id="quickInvLabel" title="Actualizar Inventario">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Inventario
+        <input type="file" accept=".xlsx,.xls" onchange="quickUpload('inv',this)">
+      </label>
+      <label class="up-btn" id="quickExtLabel" title="Actualizar Extensiones">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Extensiones
+        <input type="file" accept=".xlsx,.xls" onchange="quickUpload('ext',this)">
+      </label>
     </div>
-    <label class="small-upload" id="quickReqLabel" title="Actualizar Requerimiento">
-      ↑ Req
-      <input type="file" accept=".xlsx,.xls" onchange="quickUpload('req',this)">
-    </label>
-    <label class="small-upload" id="quickInvLabel" title="Actualizar Inventario">
-      ↑ Inv
-      <input type="file" accept=".xlsx,.xls" onchange="quickUpload('inv',this)">
-    </label>
-    <label class="small-upload" id="quickExtLabel" title="Actualizar Extensiones">
-      ↑ Ext
-      <input type="file" accept=".xlsx,.xls" onchange="quickUpload('ext',this)">
-    </label>
   </div>
 </div>
 
@@ -453,18 +472,36 @@ a{color:inherit;text-decoration:none}
       <p id="loadingMsg">Procesando archivos...</p>
     </div>
 
-    <!-- AGRUPADO VIEW -->
+    <!-- AGRUPADO VIEW (Executive Dashboard) -->
     <div id="viewAgrupado" class="hidden">
+      <!-- KPIs -->
       <div class="kpi-row" id="kpiRow"></div>
-      <div class="prog-card">
-        <div class="prog-hd">Cobertura de la colección — <span id="progTitle"></span></div>
-        <div class="pbar" id="progBar"></div>
-        <div class="pleg" id="progLeg"></div>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+        <div class="chart-card" id="chartCardCoverage">
+          <div class="chart-title">Cobertura de ítems</div>
+          <canvas id="chartCoverage" width="260" height="220"></canvas>
+          <div class="chart-legend" id="chartCoverageLeg"></div>
+        </div>
+        <div class="chart-card" id="chartCardBodega">
+          <div class="chart-title">Telas disponibles por bodega</div>
+          <canvas id="chartBodega" width="340" height="220"></canvas>
+        </div>
+        <div class="chart-card" id="chartCardGender">
+          <div class="chart-title">Estado por género</div>
+          <canvas id="chartGender" width="280" height="220"></canvas>
+        </div>
       </div>
-      <div class="section-label" id="groupSectionLabel">
-        Grupos de acción <span class="cnt" id="groupCnt">0</span>
-      </div>
-      <div id="actionGroups"></div>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <div id="execSummary"></div>
+
+      <!-- BODEGA ACTION TABLE -->
+      <div id="bodegaActionSection"></div>
+
+      <!-- INCONSISTENCIAS AGRUPADAS -->
+      <div id="inconsAgrupSection"></div>
     </div>
 
     <!-- ITEMS VIEW dashboard -->
@@ -515,11 +552,14 @@ const STATUS_C = {
 //  FILE HANDLING (client-side: read Excel via SheetJS)
 // ═══════════════════════════════════════════════════════════
 
-// Load SheetJS from CDN
+// Load SheetJS + Chart.js from CDN
 (function(){
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-  document.head.appendChild(s);
+  const s1 = document.createElement('script');
+  s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  document.head.appendChild(s1);
+  const s2 = document.createElement('script');
+  s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  document.head.appendChild(s2);
 })();
 
 function fileSelected(type, input) {
@@ -542,6 +582,10 @@ function updateFileUI() {
   setStatus('uzStatusReq', rOk, APP.fileReq?.name);
   setStatus('uzStatusInv', iOk, APP.fileInv?.name);
   setStatus('uzStatusExt', eOk, APP.fileExt?.name);
+  // Highlight topbar buttons when file loaded
+  document.getElementById('quickReqLabel')?.classList.toggle('loaded', rOk);
+  document.getElementById('quickInvLabel')?.classList.toggle('loaded', iOk);
+  document.getElementById('quickExtLabel')?.classList.toggle('loaded', eOk);
   const ready = rOk && iOk && eOk;
   const b1 = document.getElementById('btnAnalyse');
   const b2 = document.getElementById('uzAnalyseBtn');
@@ -631,7 +675,9 @@ function isBlank(v) {
 function extractTelas(row) {
   const telas = [];
   for (const n of [1,2,3,4]) {
-    const tc = `TELA ${n}`, ec = n===3 ? 'EXTENSION TELA 3' : `EXTENSION TELA ${n}`, dc = `DESCRIPCION TELA ${n}`;
+    const tc = `TELA ${n}`, dc = `DESCRIPCION TELA ${n}`;
+    // Acepta tanto 'EXTENSION TELA N' (formato antiguo) como 'EXTENSION N' (formato nuevo)
+    const ec = (row[`EXTENSION TELA ${n}`] != null) ? `EXTENSION TELA ${n}` : `EXTENSION ${n}`;
     const tela = row[tc];
     if (isBlank(tela)) continue;   // vacío, guión → este ítem no lleva más telas
     const ext = row[ec];
@@ -811,8 +857,7 @@ function renderAll() {
   const d = APP.data;
   document.getElementById('proyectoLabel').textContent = APP.proyecto || 'Configurar proyecto';
   renderKPIs(d.summary);
-  renderProgress(d.summary);
-  renderGroups(d.groups);
+  renderExecutiveDashboard(d);
   if (APP.curTab === 'items') renderSidebar();
   showView('agrupado');
 }
@@ -831,19 +876,260 @@ function renderKPIs(s) {
       <div class="kpi-l">${c.l}</div>
     </div>`).join('');
 }
-function kpiClick(f) { switchTab('agrupado'); /* filter not applied to groups, but could be */ }
+function kpiClick(f) {
+  switchTab('items');
+  APP.curFilter = f;
+  document.querySelectorAll('.pill').forEach(p => p.classList.toggle('on', p.dataset.f === f));
+  renderSidebar();
+}
 
-function renderProgress(s) {
-  const t = s.total||1;
-  const segs = [{n:s.completo||0,c:'var(--green)'},{n:s.parcial||0,c:'var(--yellow)'},{n:s.sin_stock||0,c:'var(--red)'},{n:s.solo_inconsistencias||0,c:'var(--orange)'}];
-  document.getElementById('progTitle').textContent = APP.proyecto;
-  document.getElementById('progBar').innerHTML = segs.map(sg=>`<div class="pseg" style="width:${(sg.n/t*100).toFixed(1)}%;background:${sg.c}"></div>`).join('');
-  document.getElementById('progLeg').innerHTML = [
-    {c:'var(--green)',l:`Completos (${s.completo||0})`},
-    {c:'var(--yellow)',l:`Parciales (${s.parcial||0})`},
-    {c:'var(--red)',l:`Sin stock (${s.sin_stock||0})`},
-    {c:'var(--orange)',l:`Inconsistencias (${s.solo_inconsistencias||0})`},
-  ].map(x=>`<div class="pleg-i"><div class="pdot" style="background:${x.c}"></div>${x.l}</div>`).join('');
+function renderExecutiveDashboard(d) {
+  const s = d.summary;
+  const items = d.items;
+  const groups = d.groups;
+
+  // ── CHARTS ──────────────────────────────────────────────
+  // Wait for Chart.js (loaded dynamically below)
+  if (!window.Chart) { setTimeout(()=>renderExecutiveDashboard(d), 200); return; }
+
+  // Donut: coverage
+  const cCtx = document.getElementById('chartCoverage').getContext('2d');
+  if (window._chartC) window._chartC.destroy();
+  window._chartC = new Chart(cCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Completos','Parciales','Sin stock','Inconsistencias'],
+      datasets:[{data:[s.completo||0,s.parcial||0,s.sin_stock||0,s.solo_inconsistencias||0],
+        backgroundColor:['rgba(94,234,141,.85)','rgba(255,197,61,.85)','rgba(255,107,107,.85)','rgba(255,154,60,.85)'],
+        borderColor:'#141414',borderWidth:2,hoverOffset:4}]
+    },
+    options:{responsive:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw+' ítems'}}}}
+  });
+  document.getElementById('chartCoverageLeg').innerHTML = [
+    {c:'var(--green)',l:`Completos`,n:s.completo||0},
+    {c:'var(--yellow)',l:`Parciales`,n:s.parcial||0},
+    {c:'var(--red)',l:`Sin stock`,n:s.sin_stock||0},
+    {c:'var(--orange)',l:`Inconsistencias`,n:s.solo_inconsistencias||0},
+  ].map(x=>`<div class="cleg-item"><div class="cleg-dot" style="background:${x.c}"></div><span style="flex:1">${x.l}</span><strong style="color:${x.c}">${x.n}</strong></div>`).join('');
+
+  // Bar: telas per bodega (from groups)
+  const bodegaCounts = {B006:0,B033:0,B010:0,B018:0};
+  for (const g of groups) {
+    for (const bd of g.detail.bodegas) {
+      bodegaCounts[bd.bd] = (bodegaCounts[bd.bd]||0) + bd.telas.length;
+    }
+  }
+  const bCtx = document.getElementById('chartBodega').getContext('2d');
+  if (window._chartB) window._chartB.destroy();
+  window._chartB = new Chart(bCtx, {
+    type:'bar',
+    data:{
+      labels:['B006 · Interno','B033 · Externo','B010 · Import.','B018 · Sin costo'],
+      datasets:[{label:'Telas disponibles',
+        data:[bodegaCounts.B006,bodegaCounts.B033,bodegaCounts.B010,bodegaCounts.B018],
+        backgroundColor:['rgba(94,234,141,.75)','rgba(116,185,255,.75)','rgba(255,197,61,.75)','rgba(180,180,180,.5)'],
+        borderRadius:5,borderSkipped:false}]
+    },
+    options:{responsive:false,plugins:{legend:{display:false}},scales:{
+      x:{ticks:{color:'#666',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
+      y:{ticks:{color:'#666',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}
+    }}
+  });
+
+  // Stacked bar: status per gender
+  const genders = [...new Set(items.map(i=>i.gen).filter(Boolean))];
+  const gData = {completo:{},parcial:{},sin_stock:{},solo_inconsistencias:{}};
+  for (const item of items) {
+    for (const st of ['completo','parcial','sin_stock','solo_inconsistencias']) {
+      gData[st][item.gen] = (gData[st][item.gen]||0) + (item.status===st?1:0);
+    }
+  }
+  const gCtx = document.getElementById('chartGender').getContext('2d');
+  if (window._chartG) window._chartG.destroy();
+  window._chartG = new Chart(gCtx, {
+    type:'bar',
+    data:{
+      labels: genders,
+      datasets:[
+        {label:'Completos',data:genders.map(g=>gData.completo[g]||0),backgroundColor:'rgba(94,234,141,.8)',borderRadius:3},
+        {label:'Parciales',data:genders.map(g=>gData.parcial[g]||0),backgroundColor:'rgba(255,197,61,.8)',borderRadius:3},
+        {label:'Sin stock',data:genders.map(g=>gData.sin_stock[g]||0),backgroundColor:'rgba(255,107,107,.8)',borderRadius:3},
+        {label:'Inconsist.',data:genders.map(g=>gData.solo_inconsistencias[g]||0),backgroundColor:'rgba(255,154,60,.8)',borderRadius:3},
+      ]
+    },
+    options:{responsive:false,plugins:{legend:{labels:{color:'#888',font:{size:10},boxWidth:10}}},scales:{
+      x:{stacked:true,ticks:{color:'#666',font:{size:11}},grid:{color:'rgba(255,255,255,.04)'}},
+      y:{stacked:true,ticks:{color:'#666',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}
+    }}
+  });
+
+  // ── EXECUTIVE SUMMARY ────────────────────────────────────
+  const totalTelas = items.reduce((a,i)=>a+i.n_validas,0);
+  const telasOk    = items.reduce((a,i)=>a+i.n_ok,0);
+  const telasFalt  = items.reduce((a,i)=>a+i.n_nok,0);
+  const pctItems   = Math.round(((s.completo||0)/s.total)*100);
+  const pctTelas   = Math.round((telasOk/Math.max(totalTelas,1))*100);
+
+  // Unique telas missing
+  const missingTelas = new Map();
+  for (const item of items) {
+    for (const t of item.telas) {
+      if (!t.sin_ext && !t.ok) {
+        const k = `${t.id}|${t.ext_req}`;
+        if (!missingTelas.has(k)) missingTelas.set(k,{id:t.id,ext:t.ext_req,desc:t.desc,count:0,hasAlts:t.alts.length>0});
+        missingTelas.get(k).count++;
+      }
+    }
+  }
+  const missingArr = [...missingTelas.values()].sort((a,b)=>b.count-a.count);
+  const noExistAtAll = missingArr.filter(m=>!m.hasAlts);
+  const hasAltsOnly  = missingArr.filter(m=>m.hasAlts);
+
+  // Telas available per bodega (item-tela combos)
+  const bdItems = {B006:new Set(),B033:new Set(),B010:new Set(),B018:new Set()};
+  for (const g of groups) {
+    for (const bd of g.detail.bodegas) {
+      for (const t of bd.telas) {
+        t.refs.forEach(r => bdItems[bd.bd].add(r));
+      }
+    }
+  }
+
+  document.getElementById('execSummary').innerHTML = `
+    <div class="exec-card" style="margin-bottom:16px">
+      <div class="exec-card-title">📋 Resumen ejecutivo — ${APP.proyecto||'Colección'}</div>
+      <div class="exec-grid">
+        <div class="exec-stat">
+          <div class="exec-stat-n" style="color:var(--accent)">${pctItems}%</div>
+          <div class="exec-stat-l">ítems con todas las telas</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n" style="color:var(--green)">${pctTelas}%</div>
+          <div class="exec-stat-l">telas individuales cubiertas</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n" style="color:var(--red)">${missingArr.length}</div>
+          <div class="exec-stat-l">combinaciones tela+ext sin stock</div>
+        </div>
+        <div class="exec-stat">
+          <div class="exec-stat-n" style="color:var(--orange)">${noExistAtAll.length}</div>
+          <div class="exec-stat-l">telas inexistentes en bodega</div>
+        </div>
+      </div>
+      <div class="exec-insight">
+        De los <strong>${s.total} ítems</strong> de la colección, 
+        <span class="hi-green">${s.completo||0} están completamente listos</span> para desarrollo de prototipo.
+        ${s.parcial>0?`<strong>${s.parcial}</strong> ítems tienen disponibilidad parcial — se puede iniciar el desarrollo con las telas disponibles.`:''}
+        ${s.sin_stock>0?`<span class="hi-red">${s.sin_stock} ítems</span> no tienen ninguna tela en bodega.`:''}
+        <br><br>
+        En total hay <strong>${telasOk} de ${totalTelas} telas</strong> disponibles en bodega.
+        ${noExistAtAll.length>0?`<span class="hi-red"> ${noExistAtAll.length} telas no existen en ninguna bodega</span> y requieren muestra de embarque:`:'<span class="hi-green"> Todas las telas requeridas tienen existencias en alguna bodega.</span>'}
+        ${noExistAtAll.length>0?'<ul style="margin:8px 0 0 16px;display:flex;flex-direction:column;gap:3px">'+noExistAtAll.slice(0,6).map(m=>`<li style="font-size:12px"><span style="font-family:IBM Plex Mono,monospace;color:var(--red)">${m.id}</span> — ${m.desc}</li>`).join('')+(noExistAtAll.length>6?`<li style="font-size:12px;color:var(--muted)">…y ${noExistAtAll.length-6} más</li>`:'')+  '</ul>':''}
+        ${hasAltsOnly.length>0?`<br><br><strong>${hasAltsOnly.length} telas</strong> tienen la extensión exacta sin stock pero <span class="hi-yellow">existen en otras extensiones en bodega</span> — revisar si alguna corresponde al color requerido.`:''}
+      </div>
+    </div>`;
+
+  // ── BODEGA ACTION TABLE ──────────────────────────────────
+  let bdHTML = `<div class="bd-action-title">🏭 Acciones por bodega <span class="cnt">${Object.values(bdItems).reduce((a,s)=>a+s.size,0)} ítems con tela disponible</span></div>`;
+  
+  const bdOrder = ['B006','B033','B010','B018'];
+  const bdColors = {B006:'var(--green)',B033:'var(--blue)',B010:'var(--yellow)',B018:'var(--muted2)'};
+  
+  for (const bd of bdOrder) {
+    const bdGroups = groups.filter(g=>g.detail.bodegas.some(b=>b.bd===bd));
+    if (!bdGroups.length) continue;
+    
+    // Collect all unique tela+ext combos for this bodega
+    const telaMap = new Map();
+    for (const g of bdGroups) {
+      const bdDet = g.detail.bodegas.find(b=>b.bd===bd);
+      if (!bdDet) continue;
+      for (const t of bdDet.telas) {
+        const k=`${t.tela}|${t.ext}`;
+        if (!telaMap.has(k)) telaMap.set(k,{...t,allRefs:[...t.refs]});
+        else t.refs.forEach(r=>{ if(!telaMap.get(k).allRefs.includes(r)) telaMap.get(k).allRefs.push(r); });
+      }
+    }
+    const telas = [...telaMap.values()].sort((a,b)=>a.tela-b.tela);
+    const propioCount = telas.filter(t=>t.propio).length;
+    const uid = 'bd-'+bd;
+    
+    bdHTML += `
+      <div class="bd-exec-block">
+        <div class="bd-exec-hd" onclick="toggleBdExec('${uid}')">
+          <span class="bd-tag bd-${bd}">${bd}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:13px">${BODEGA_NAME[bd]||bd}</div>
+            <div style="font-size:11px;color:var(--muted2)">${telas.length} telas distintas · ${bdItems[bd].size} ítems · ${propioCount} telas propias</div>
+          </div>
+          <span class="bd-tag" style="background:var(--s3);border-color:var(--border);color:${bdColors[bd]};font-size:11px">${bdItems[bd].size} ítems</span>
+          <span style="color:var(--muted);font-size:18px;transition:transform .2s" id="chev-${uid}">›</span>
+        </div>
+        <div class="bd-exec-body" id="${uid}">
+          <table class="tela-table">
+            <thead><tr>
+              <th>Tela</th><th>Ext / Color</th><th>Descripción</th><th>Ítems</th><th>Prioridad</th>
+            </tr></thead>
+            <tbody>
+              ${telas.map(t=>`
+                <tr class="${t.propio?'row-propio':''}">
+                  <td class="mono-sm" style="font-weight:600">${t.tela}</td>
+                  <td><span class="mono-sm" style="color:var(--accent)">${t.ext}</span>
+                    ${APP.extMap&&APP.extMap[t.ext]?`<span style="display:block;font-size:10px;color:var(--yellow);margin-top:2px">🎨 ${APP.extMap[t.ext]}</span>`:''}
+                    <span style="display:block;font-size:10px;color:var(--muted2)">${t.d_ext||''}</span></td>
+                  <td style="font-size:12px;color:var(--muted2);max-width:180px">${t.desc}</td>
+                  <td><div class="refs-wrap">${t.allRefs.map(r=>`<span class="rtag${t.propio?' propio':''}" onclick="goToItem(${r})">${r}</span>`).join('')}</div></td>
+                  <td><span class="pbadge ${t.propio?'pb-p':'pb-o'}">${t.propio?'Propio':'Préstamo'}</span></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+  document.getElementById('bodegaActionSection').innerHTML = bdHTML;
+
+  // ── INCONSISTENCIAS AGRUPADAS ────────────────────────────
+  const inconsMap = new Map();
+  for (const item of items) {
+    for (const t of item.telas) {
+      if (t.sin_ext) {
+        const k=t.id;
+        if (!inconsMap.has(k)) inconsMap.set(k,{id:t.id,desc:t.desc,refs:[]});
+        if (!inconsMap.get(k).refs.includes(item.ref)) inconsMap.get(k).refs.push(item.ref);
+      }
+    }
+  }
+  
+  if (inconsMap.size > 0) {
+    let incHTML = `<div class="bd-action-title" style="margin-top:24px;color:var(--orange)">🔶 Inconsistencias en el requerimiento <span class="cnt">${inconsMap.size} telas sin extensión</span></div>`;
+    for (const [,inc] of inconsMap) {
+      incHTML += `
+        <div class="incons-group-card">
+          <div class="incons-group-title">
+            <span style="font-family:'IBM Plex Mono',monospace">Tela ${inc.id}</span> — ${inc.desc}
+            <span style="margin-left:auto;font-size:10px;opacity:.7">${inc.refs.length} ítem${inc.refs.length>1?'s':''} afectados</span>
+          </div>
+          <div style="font-size:12px;color:var(--text)">Sin extensión asignada en el requerimiento — verificar y corregir antes de proceder.</div>
+          <div class="incons-refs">${inc.refs.map(r=>`<span class="rtag" onclick="goToItem(${r})">${r}</span>`).join('')}</div>
+        </div>`;
+    }
+    document.getElementById('inconsAgrupSection').innerHTML = incHTML;
+  } else {
+    document.getElementById('inconsAgrupSection').innerHTML = '';
+  }
+}
+
+function toggleBdExec(uid) {
+  const body = document.getElementById(uid);
+  const chev = document.getElementById('chev-'+uid);
+  const hd = body.previousElementSibling;
+  const open = body.classList.toggle('open');
+  hd.classList.toggle('open-hd', open);
+  if (chev) chev.style.transform = open ? 'rotate(90deg)' : '';
+}
+
+function renderGroups(groups) {
+  // Legacy — no longer used in agrupado view, kept for compatibility
 }
 
 function renderGroups(groups) {
@@ -1087,10 +1373,6 @@ function showUpload() {
   document.getElementById('viewItems').classList.add('hidden');
   document.getElementById('tabRow').classList.add('hidden');
 
-// Check if already authenticated this session
-if (sessionStorage.getItem('ura_auth') === '1') {
-  document.getElementById('pwScreen').style.display = 'none';
-}
   document.getElementById('sidebar').classList.add('hidden-sb');
 }
 function showLoading(msg) {
@@ -1123,40 +1405,6 @@ document.querySelectorAll('.pill').forEach(p => {
     renderSidebar();
   });
 });
-
-// ═══════════════════════════════════════════════════════════
-//  PASSWORD
-// ═══════════════════════════════════════════════════════════
-const PW_HASH = '17c64d920b7e762550b5f03ad6d8a5f7ad3326ce04daf3479afdf442df4d764a'; // SHA-256 of URAbastecimiento2026*
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-async function checkPw() {
-  const val = document.getElementById('pwInput').value;
-  const hash = await sha256(val);
-  if (hash === PW_HASH) {
-    document.getElementById('pwScreen').style.display = 'none';
-    sessionStorage.setItem('ura_auth','1');
-  } else {
-    const inp = document.getElementById('pwInput');
-    document.getElementById('pwError').textContent = 'Contraseña incorrecta';
-    inp.classList.remove('shake');
-    void inp.offsetWidth; // reflow
-    inp.classList.add('shake');
-    inp.value = '';
-    setTimeout(()=>{ document.getElementById('pwError').textContent=''; }, 2500);
-  }
-}
-
-function togglePwVis() {
-  const inp = document.getElementById('pwInput');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-
-document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') checkPw(); });
 
 // ═══════════════════════════════════════════════════════════
 // INIT — start at upload screen
