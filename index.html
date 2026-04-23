@@ -210,6 +210,7 @@ a{color:inherit;text-decoration:none}
       <option value="all">Todos los proyectos</option>
     </select>
     <span id="proyectoLabel" class="proyecto-badge" onclick="openModal()">— sin proyecto —</span>
+    <span id="extStatusInd" title="Cargando extensiones..." style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);cursor:help;white-space:nowrap;letter-spacing:.04em">○ EXT</span>
     <label class="small-upload" title="Actualizar Requerimiento">↑ Req<input type="file" accept=".xlsx,.xls" onchange="quickUpload('req',this)"></label>
     <label class="small-upload" title="Actualizar Inventario">↑ Inv<input type="file" accept=".xlsx,.xls" onchange="quickUpload('inv',this)"></label>
   </div>
@@ -334,6 +335,46 @@ const STATUS_C={completo:{label:'Completo',dot:'dg',sc:'scc-completo'},parcial:{
 const BODEGA_PRIO={B006:1,B033:2,B010:3,B018:4};
 (function(){const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';document.head.appendChild(s);})();
 
+// ── EXTENSIONES DE TELA ──────────────────────────────────
+// Cambia esta ruta si el archivo tiene otro nombre o está en subcarpeta
+const EXTENSIONS_FILE = './extensiones.xlsx';
+let extDescMap = {}; // { id_extension(number) → "descripción color" }
+
+async function loadExtensions() {
+  try {
+    // Esperar a que SheetJS esté disponible (se carga de forma asíncrona)
+    let retries = 0;
+    while (typeof XLSX === 'undefined' && retries < 20) {
+      await new Promise(r => setTimeout(r, 200));
+      retries++;
+    }
+    const resp = await fetch(EXTENSIONS_FILE);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const buf = await resp.arrayBuffer();
+    const wb = XLSX.read(buf, {type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    // Leer como array de arrays para no depender del nombre de columnas
+    const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null});
+    for (let i = 1; i < rows.length; i++) {
+      const id = rows[i][0], desc = rows[i][1];
+      if (id != null && id !== '') extDescMap[+id] = String(desc || '').trim();
+    }
+    const n = Object.keys(extDescMap).length;
+    console.log(`✓ Extensiones cargadas: ${n}`);
+    const ind = document.getElementById('extStatusInd');
+    if (ind) { ind.style.color = 'var(--green)'; ind.title = `${n} descripciones de extensión cargadas`; ind.textContent = `● EXT`; }
+  } catch(err) {
+    console.warn('Extensiones no disponibles (el app funciona igual):', err.message);
+    const ind = document.getElementById('extStatusInd');
+    if (ind) { ind.style.color = 'var(--muted)'; ind.title = `No se pudo cargar ${EXTENSIONS_FILE}`; }
+  }
+}
+
+function getExtDesc(extId, fallback) {
+  if (extId == null) return fallback || '';
+  return extDescMap[+extId] || fallback || '';
+}
+
 function fileSelected(type,input){const file=input.files[0];if(!file)return;if(type==='req')APP.fileReq=file;else APP.fileInv=file;updateFileUI();}
 function updateFileUI(){const rOk=!!APP.fileReq,iOk=!!APP.fileInv;const set=(id,ok,name)=>{const el=document.getElementById(id);if(el){el.textContent=ok?`✓ ${name}`:'Sin archivo';el.className=`file-status ${ok?'ok':'nok'}`;}};set('statusReq',rOk,APP.fileReq?.name);set('statusInv',iOk,APP.fileInv?.name);set('uzStatusReq',rOk,APP.fileReq?.name);set('uzStatusInv',iOk,APP.fileInv?.name);const ready=rOk&&iOk;const b1=document.getElementById('btnAnalyse'),b2=document.getElementById('uzAnalyseBtn');if(b1)b1.disabled=!ready;if(b2)b2.disabled=!ready;}
 function quickUpload(type,input){fileSelected(type,input);if(APP.fileReq&&APP.fileInv)runAnalysis();}
@@ -343,7 +384,7 @@ function dropFile(e,type){e.preventDefault();dragLeave(e.currentTarget.id);const
 
 function readExcel(file){return new Promise((res,rej)=>{const reader=new FileReader();reader.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];res(XLSX.utils.sheet_to_json(ws,{defval:null}));}catch(err){rej(err);}};reader.onerror=rej;reader.readAsArrayBuffer(file);});}
 
-function buildInvLookup(rows){const map={};for(const r of rows){const tela=r['ÍTEM TELA']!=null?+r['ÍTEM TELA']:null,ext=r['EXTENSIÓN TELA']!=null?+r['EXTENSIÓN TELA']:null,bd=String(r['BODEGA']||'').trim(),item=r['ÍTEM URA AL QUE ESTÁ ASIGNADO']!=null?+r['ÍTEM URA AL QUE ESTÁ ASIGNADO']:null;if(tela==null||ext==null||!bd)continue;const k=`${tela}|${ext}|${bd}|${item}`;if(!map[k])map[k]={tela,ext,bd,item,desc_tela:r['DESCRIPCIÓN TELA']||'',desc_ext:String(r['DESCRIPCIÓN EXTENSIÓN TELA']||'').replace(/\n/g,' ').trim(),metros:0};map[k].metros+=+(r['EXISTENCIA EN METROS']||0);}return Object.values(map).map(r=>({...r,prio:BODEGA_PRIO[r.bd]||9}));}
+function buildInvLookup(rows){const map={};for(const r of rows){const tela=r['ÍTEM TELA']!=null?+r['ÍTEM TELA']:null,ext=r['EXTENSIÓN TELA']!=null?+r['EXTENSIÓN TELA']:null,bd=String(r['BODEGA']||'').trim(),item=r['ÍTEM URA AL QUE ESTÁ ASIGNADO']!=null?+r['ÍTEM URA AL QUE ESTÁ ASIGNADO']:null;if(tela==null||ext==null||!bd)continue;const k=`${tela}|${ext}|${bd}|${item}`;if(!map[k]){const invDesc=String(r['DESCRIPCIÓN EXTENSIÓN TELA']||'').replace(/\n/g,' ').trim();map[k]={tela,ext,bd,item,desc_tela:r['DESCRIPCIÓN TELA']||'',desc_ext:extDescMap[ext]||invDesc,metros:0};}map[k].metros+=+(r['EXISTENCIA EN METROS']||0);}return Object.values(map).map(r=>({...r,prio:BODEGA_PRIO[r.bd]||9}));}
 
 function extractTelas(row){const telas=[];for(const n of[1,2,3,4]){const tc=`TELA ${n}`,ec=n===3?'EXTENSION TELA 3':`EXTENSION TELA ${n}`,dc=`DESCRIPCION TELA ${n}`;const tela=row[tc];if(tela==null)continue;const ext=row[ec];telas.push({n,id:+tela,ext_req:ext!=null?+ext:null,desc:String(row[dc]||'').trim()});}return telas;}
 
@@ -355,7 +396,7 @@ function analyseItem(row,lookup){
   for(const t of telas_req){
     if(t.ext_req===null)incons.push(`Tela ${t.n} (#${t.id} — ${t.desc}): sin extensión`);
     let fuentes=[],alts=[];
-    if(t.ext_req!==null){const exact=lookup.filter(r=>r.tela===t.id&&r.ext===t.ext_req);if(exact.length){exact.sort((a,b)=>{const ap=(ura&&a.item===ura)?0:1,bp=(ura&&b.item===ura)?0:1;return ap-bp||a.prio-b.prio;});fuentes=exact.map(r=>({bd:r.bd,item:r.item,propio:!!(ura&&r.item===ura),ext:r.ext,d_ext:r.desc_ext.slice(0,60)}));}else{const others=lookup.filter(r=>r.tela===t.id);others.sort((a,b)=>a.prio-b.prio);const seen=new Set();for(const r of others){if(!seen.has(r.ext)){seen.add(r.ext);alts.push({ext:r.ext,d_ext:r.desc_ext.slice(0,60),bd:r.bd});}if(alts.length>=8)break;}}
+    if(t.ext_req!==null){const exact=lookup.filter(r=>r.tela===t.id&&r.ext===t.ext_req);if(exact.length){exact.sort((a,b)=>{const ap=(ura&&a.item===ura)?0:1,bp=(ura&&b.item===ura)?0:1;return ap-bp||a.prio-b.prio;});fuentes=exact.map(r=>({bd:r.bd,item:r.item,propio:!!(ura&&r.item===ura),ext:r.ext,d_ext:r.desc_ext.slice(0,60)}));}else{const others=lookup.filter(r=>r.tela===t.id);others.sort((a,b)=>a.prio-b.prio);const seen=new Set();for(const r of others){if(!seen.has(r.ext)){seen.add(r.ext);alts.push({ext:r.ext,d_ext:getExtDesc(r.ext,r.desc_ext.slice(0,60)),bd:r.bd});}if(alts.length>=8)break;}}
     }
     tela_details.push({n:t.n,id:t.id,ext_req:t.ext_req,desc:t.desc,fuentes,alts,ok:fuentes.length>0,sin_ext:t.ext_req===null});
   }
@@ -411,7 +452,7 @@ function renderGroups(){const grupos=getFilteredGroups();document.getElementById
 
 function buildGroupHTML(g){
   const typeLabel={completo:'Listo',parcial:'Parcial',sin_stock:'Sin stock',solo_incons:'Solo inconsist.'};let bodyHTML='';
-  for(const bd of g.detail.bodegas){bodyHTML+=`<div class="bd-section"><div class="bd-hd"><span class="bd-tag bd-${bd.bd}">${bd.bd}</span><span class="bd-name">${bd.name}</span></div><table class="tela-table"><thead><tr><th>Tela</th><th>Extensión / color</th><th>Descripción</th><th>Ítems que la necesitan</th><th>Prioridad</th></tr></thead><tbody>${bd.telas.map(t=>`<tr class="${t.propio?'row-propio':''}"><td><span class="mono-sm" style="font-weight:600">${t.tela}</span></td><td><span class="mono-sm" style="color:var(--accent)">${t.ext}</span><br><span class="mono-xs text-muted">${t.d_ext||'—'}</span></td><td style="color:var(--muted2);font-size:12px;max-width:180px">${t.desc}</td><td><div class="refs-wrap">${t.refs.map(r=>`<span class="rtag${t.propio?' propio':''}" onclick="goToItem(${r})">${r}</span>`).join('')}</div></td><td><span class="pbadge ${t.propio?'pb-p':'pb-o'}">${t.propio?'Propio':'Préstamo'}</span></td></tr>`).join('')}</tbody></table></div>${g.detail.bodegas.indexOf(bd)<g.detail.bodegas.length-1?'<div class="divider"></div>':''}`;}
+  for(const bd of g.detail.bodegas){bodyHTML+=`<div class="bd-section"><div class="bd-hd"><span class="bd-tag bd-${bd.bd}">${bd.bd}</span><span class="bd-name">${bd.name}</span></div><table class="tela-table"><thead><tr><th>Tela</th><th>Extensión / color</th><th>Descripción</th><th>Ítems que la necesitan</th><th>Prioridad</th></tr></thead><tbody>${bd.telas.map(t=>`<tr class="${t.propio?'row-propio':''}"><td><span class="mono-sm" style="font-weight:600">${t.tela}</span></td><td><span class="mono-sm" style="color:var(--accent)">${t.ext}</span><br><span class="mono-xs text-muted">${getExtDesc(t.ext,t.d_ext)||'—'}</span></td><td style="color:var(--muted2);font-size:12px;max-width:180px">${t.desc}</td><td><div class="refs-wrap">${t.refs.map(r=>`<span class="rtag${t.propio?' propio':''}" onclick="goToItem(${r})">${r}</span>`).join('')}</div></td><td><span class="pbadge ${t.propio?'pb-p':'pb-o'}">${t.propio?'Propio':'Préstamo'}</span></td></tr>`).join('')}</tbody></table></div>${g.detail.bodegas.indexOf(bd)<g.detail.bodegas.length-1?'<div class="divider"></div>':''}`;}
   if(g.detail.missing.length){bodyHTML+=`<div class="sub-section"><div class="sub-section-title st-missing">⚠ Telas sin stock exacto (${g.detail.missing.length})</div>${g.detail.missing.map(m=>`<div class="miss-row"><div style="flex:1;min-width:0"><div><span class="mono-sm" style="color:var(--red)">${m.tela}</span> · ext <strong>${m.ext}</strong> — <span style="color:var(--muted2);font-size:12px">${m.desc}</span></div><div class="refs-wrap" style="margin-top:5px">${m.refs.map(r=>`<span class="rtag" onclick="goToItem(${r})">${r}</span>`).join('')}</div>${m.alts.length?`<div class="miss-alt-wrap"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:6px 0 4px">Extensiones disponibles:</div>${m.alts.map(a=>`<div class="alt-row"><span class="bd-tag bd-${a.bd}" style="font-size:10px;padding:2px 7px">${a.bd}</span><span class="mono-xs" style="color:var(--accent)">Ext ${a.ext}</span><span>${a.d_ext}</span></div>`).join('')}</div>`:`<div class="action-row" style="margin-top:8px"><span class="action-icon">📦</span><span>Tela no existe en ninguna bodega — <strong>Solicitar muestra de embarque</strong></span></div>`}</div></div>`).join('')}</div>`;}
   if(g.detail.incons.length){bodyHTML+=`<div class="sub-section"><div class="sub-section-title st-incons">🔶 Inconsistencias en requerimiento</div>${g.detail.incons.map(inc=>`<div class="incons-row"><div style="flex:1"><div><span class="mono-sm" style="color:var(--orange)">${inc.tela}</span> — <span style="color:var(--muted2);font-size:12px">${inc.desc}</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">Sin extensión en el requerimiento</div><div class="refs-wrap" style="margin-top:5px">${inc.refs.map(r=>`<span class="rtag" onclick="goToItem(${r})">${r}</span>`).join('')}</div></div></div>`).join('')}</div>`;}
   if(!g.detail.bodegas.length&&!g.detail.incons.length&&!g.detail.missing.length)bodyHTML+=`<div style="color:var(--muted2);font-size:13px;padding:4px 0">Sin acciones disponibles para este grupo.</div>`;
@@ -427,7 +468,8 @@ function renderTelas(){
   document.getElementById('telaContent').innerHTML=`<table class="tela-view-table"><thead><tr><th>Estado</th><th>ID Tela</th><th>Extensión</th><th>Descripción</th><th>Bodega(s) / Alternativas</th><th>Ítems que la necesitan</th></tr></thead><tbody>${filtered.map(t=>{
     const refsHtml=t.items.slice(0,10).map(i=>`<span class="rtag" onclick="goToItem(${i.ref})">${i.ref}</span>`).join('')+(t.items.length>10?`<span class="rtag" style="cursor:default">+${t.items.length-10} más</span>`:'');
     let fH='';if(t.ok){fH=t.bodegas.map(bd=>`<span class="bd-tag bd-${bd}" style="font-size:10px;padding:2px 8px;margin-right:4px">${bd}</span>`).join('');}else if(t.alts.length){fH=`<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em">Alternativas:</div>`+t.alts.slice(0,4).map(a=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="bd-tag bd-${a.bd}" style="font-size:10px;padding:2px 7px">${a.bd}</span><span class="mono-xs" style="color:var(--accent)">Ext ${a.ext}</span><span style="font-size:11px;color:var(--muted2)">${a.d_ext}</span></div>`).join('')+(t.alts.length>4?`<div style="font-size:10px;color:var(--muted)">+${t.alts.length-4} más</div>`:'');}else{fH=`<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--red)">Sin stock en ninguna bodega</span>`;}
-    return`<tr class="${t.ok?'':'row-nok'}"><td><span class="tela-status-badge ${t.ok?'tsb-ok':'tsb-nok'}">${t.ok?'Disponible':'Sin stock'}</span></td><td><span class="mono-sm" style="font-weight:600">${t.id}</span></td><td><span class="mono-sm" style="color:var(--accent)">${t.ext}</span></td><td style="color:var(--muted2);max-width:160px;font-size:12px">${t.desc||'—'}</td><td>${fH}</td><td><div style="margin-bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2)">${t.items.length} ítem${t.items.length>1?'s':''}</div><div class="refs-wrap">${refsHtml}</div></td></tr>`;
+    const extColor = getExtDesc(t.ext);
+    return`<tr class="${t.ok?'':'row-nok'}"><td><span class="tela-status-badge ${t.ok?'tsb-ok':'tsb-nok'}">${t.ok?'Disponible':'Sin stock'}</span></td><td><span class="mono-sm" style="font-weight:600">${t.id}</span></td><td><span class="mono-sm" style="color:var(--accent)">${t.ext}</span>${extColor?`<br><span style="font-size:10px;color:var(--muted2)">${extColor}</span>`:''}</td><td style="color:var(--muted2);max-width:160px;font-size:12px">${t.desc||'—'}</td><td>${fH}</td><td><div style="margin-bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2)">${t.items.length} ítem${t.items.length>1?'s':''}</div><div class="refs-wrap">${refsHtml}</div></td></tr>`;
   }).join('')}</tbody></table>`;
 }
 
@@ -443,7 +485,7 @@ function buildDetailHTML(item){
   for(const t of item.telas){const cls=t.sin_ext?'twarn':t.ok?'tok':'tnok',stl=t.sin_ext?'ts-warn':t.ok?'ts-ok':'ts-nok',stxt=t.sin_ext?'Sin extensión':t.ok?'Disponible':'Sin stock';
     h+=`<div class="trow ${cls}"><div class="trow-hd"><span class="tnum">TELA ${t.n}</span><div style="flex:1;min-width:0"><div class="tdesc">${t.desc||'—'}</div><div class="tids"><span>ID: <strong>${t.id}</strong></span><span>Ext req: <strong>${t.ext_req??'—'}</strong></span></div></div><span class="tst ${stl}">${stxt}</span></div>`;
     if(t.sin_ext){h+=`<div class="trow-body"><div class="action-row" style="background:var(--orange-bg);border-color:rgba(255,154,60,.3)"><span class="action-icon">🔶</span><span><strong style="color:var(--orange)">Acción:</strong> Completar extensión en el requerimiento original.</span></div></div>`;}
-    else if(t.ok){const best=t.fuentes[0];h+=`<div class="trow-body"><div class="action-rec"><span class="al al-ok">Acción</span><span>Tomar de <strong>${best.bd}</strong> — ${BODEGA_NAME[best.bd]||best.bd}</span><span class="ml-auto" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2)">${best.propio?'✓ Ítem propio':`Ítem ${best.item??'—'}`}</span></div>${t.fuentes.length>1?`<div class="src-mini">${t.fuentes.map(f=>`<div class="srow"><span class="bd-tag bd-${f.bd}" style="font-size:10px;padding:2px 7px">${f.bd}</span>${f.propio?'<span style="font-family:IBM Plex Mono,monospace;font-size:9px;background:var(--accent-bg);border:1px solid rgba(212,255,78,.4);color:var(--accent);padding:1px 5px;border-radius:3px">PROPIO</span>':''}<span class="mono-xs" style="color:var(--accent)">${f.ext}</span><span style="color:var(--muted2)">${f.d_ext||'—'}</span><span class="ml-auto mono-xs text-muted">Ítem ${f.item??'—'}</span></div>`).join('')}</div>`:''}</div>`;}
+    else if(t.ok){const best=t.fuentes[0];h+=`<div class="trow-body"><div class="action-rec"><span class="al al-ok">Acción</span><span>Tomar de <strong>${best.bd}</strong> — ${BODEGA_NAME[best.bd]||best.bd}</span><span class="ml-auto" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2)">${best.propio?'✓ Ítem propio':`Ítem ${best.item??'—'}`}</span></div>${t.fuentes.length>1?`<div class="src-mini">${t.fuentes.map(f=>`<div class="srow"><span class="bd-tag bd-${f.bd}" style="font-size:10px;padding:2px 7px">${f.bd}</span>${f.propio?'<span style="font-family:IBM Plex Mono,monospace;font-size:9px;background:var(--accent-bg);border:1px solid rgba(212,255,78,.4);color:var(--accent);padding:1px 5px;border-radius:3px">PROPIO</span>':''}<span class="mono-xs" style="color:var(--accent)">${f.ext}</span><span style="color:var(--muted2)">${getExtDesc(f.ext,f.d_ext)||'—'}</span><span class="ml-auto mono-xs text-muted">Ítem ${f.item??'—'}</span></div>`).join('')}</div>`:''}</div>`;}
     else{h+=`<div class="trow-body">`;if(t.alts.length){h+=`<div class="action-row" style="background:var(--yellow-bg);border-color:rgba(255,197,61,.3);margin-bottom:8px"><span class="action-icon">🔍</span><span><strong style="color:var(--yellow)">Extensión no encontrada.</strong> Verificar si alguna alternativa corresponde al color:</span></div>`;h+=t.alts.map(a=>`<div class="srow"><span class="bd-tag bd-${a.bd}" style="font-size:10px;padding:2px 7px">${a.bd}</span><span class="mono-xs" style="color:var(--accent)">Ext ${a.ext}</span><span style="color:var(--muted2)">${a.d_ext}</span></div>`).join('');}else{h+=`<div class="action-row"><span class="action-icon">📦</span><span><strong style="color:var(--red)">Sin tela en ninguna bodega.</strong> Solicitar muestra de embarque al proveedor.</span></div>`;}h+=`</div>`;}
     h+=`</div>`;
   }
@@ -484,6 +526,8 @@ function exportPDFTela(){const all=buildTelaData(getFilteredItems());const filte
 
 showUpload();
 document.getElementById('tabRow').classList.add('hidden');
+// Cargar extensiones al iniciar (no bloquea el app si falla)
+loadExtensions();
 </script>
 </body>
 </html>
